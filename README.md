@@ -51,8 +51,8 @@ effect sizes, pairwise tests).
 
 ## Notes
 
-- **Data is never committed** (see `.gitignore`) — it stays on your machine,
+- **Data is never committed** (see `.gitignore`) : it stays on your machine,
   which also keeps you inside the platform's terms and UK GDPR.
 - **Credentials are read from environment variables**, never hard-coded.
 - Configuration (brands, subreddits, thresholds, model names) lives in
-  `config.py` — change settings there, not scattered through the scripts.
+  `config.py` : change settings there, not scattered through the scripts.
