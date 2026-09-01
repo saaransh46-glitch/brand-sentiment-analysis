@@ -1,20 +1,3 @@
-"""
-Stage 3 — Comparative analysis + figures (your Findings section).
-
-Reads  data/processed/posts_topics.csv (needs sentiment + topics run first)
-Writes figures to outputs/figures/ and tables to outputs/tables/
-
-Produces, following your four-stage plan:
-  1. Descriptive : sentiment distribution per brand (table + stacked bar).
-  2. Inferential : Kruskal-Wallis on VADER compound across brands (+ epsilon^2
-                   effect size) and chi-square on sentiment label x brand
-                   (+ Cramer's V). Effect sizes matter here because with
-                   ~40k rows almost anything is "significant".
-  3. Combined    : brand x aspect sentiment matrix (heatmap) - the core output
-                   linking WHAT is discussed to HOW people feel.
-
-Every figure is saved with a title/caption and a source note.
-"""
 
 import sys
 from pathlib import Path
@@ -30,7 +13,6 @@ import config  # noqa: E402
 
 SOURCE_NOTE = "Source: author's analysis of Yelp Open Dataset review text."
 
-# Which columns drive the analysis (transformer by default; see config.PRIMARY_METHOD)
 PRIMARY = getattr(config, "PRIMARY_METHOD", "tf")
 LABEL_COL = f"{PRIMARY}_label"
 SCORE_COL = f"{PRIMARY}_compound"
@@ -49,9 +31,6 @@ def _load():
     return df
 
 
-# ---------------------------------------------------------------------------
-# 1. Descriptive
-# ---------------------------------------------------------------------------
 def descriptive(df):
     ct = pd.crosstab(df["brand"], df[LABEL_COL], normalize="index") * 100
     ct = ct[[c for c in ["positive", "neutral", "negative"] if c in ct.columns]]
@@ -74,9 +53,6 @@ def descriptive(df):
     plt.close()
 
 
-# ---------------------------------------------------------------------------
-# 2. Inferential  (with effect sizes)
-# ---------------------------------------------------------------------------
 def inferential(df):
     from scipy import stats
 
@@ -96,7 +72,6 @@ def inferential(df):
     print(f"chi2 = {chi2:.1f}, dof = {dof}, p = {pc:.2e}, Cramer's V = {cramers_v:.4f} "
           f"({_interpret_v(cramers_v)} association)")
 
-    # pairwise Mann-Whitney with Bonferroni correction
     brands = sorted(df["brand"].unique())
     print("\n--- Pairwise Mann-Whitney on compound (Bonferroni-corrected p) ---")
     pairs = [(a, b) for i, a in enumerate(brands) for b in brands[i + 1:]]
@@ -125,9 +100,6 @@ def _interpret_v(v):
     return "negligible" if v < 0.1 else "small" if v < 0.3 else "moderate" if v < 0.5 else "large"
 
 
-# ---------------------------------------------------------------------------
-# 3. Combined: brand x aspect sentiment matrix
-# ---------------------------------------------------------------------------
 def sentiment_by_aspect(df):
     if "aspect" not in df.columns:
         print("No 'aspect' column (run topics.py) - skipping matrix.")
