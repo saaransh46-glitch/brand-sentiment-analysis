@@ -1,21 +1,4 @@
-"""
-Stage 1 — Sentiment classification (two methods) + validation.
 
-Reads  data/processed/posts_clean.csv
-Writes data/processed/posts_sentiment.csv  (adds vader_compound, vader_label,
-                                            and, if you run it, tf_label, tf_score)
-
-Two methods, exactly as in your proposal:
-  1. VADER  — lexicon/rule-based, runs instantly offline, great baseline.
-  2. Transformer (cardiffnlp/twitter-roberta) — contextual, needs internet the
-     first time to download the model (~500 MB), then runs offline.
-
-Sub-commands (pass as the first argument):
-  vader        -> add VADER scores        (default if no argument given)
-  transformer  -> add transformer labels  (run on your own machine)
-  sample       -> export 100 posts for you to hand-label (validation)
-  score        -> compute accuracy/precision/recall/F1 from your labels
-"""
 
 import sys
 from pathlib import Path
@@ -26,9 +9,6 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 import config  # noqa: E402
 
 
-# ---------------------------------------------------------------------------
-# 1. VADER
-# ---------------------------------------------------------------------------
 def run_vader(df: pd.DataFrame) -> pd.DataFrame:
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
@@ -50,9 +30,6 @@ def run_vader(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ---------------------------------------------------------------------------
-# 2. Transformer  (run this one on your own machine — needs Hugging Face)
-# ---------------------------------------------------------------------------
 def _select_device():
     """Pick the fastest available backend: CUDA (e.g. an L4) -> Apple MPS (M-series) -> CPU."""
     import torch
@@ -76,7 +53,7 @@ def run_transformer(df: pd.DataFrame) -> pd.DataFrame:
         truncation=True,
         max_length=512,
         device=_select_device(),
-        top_k=None,   # return scores for ALL classes, not just the winner
+        top_k=None,   
     )
     texts = df["text_clean"].fillna("").astype(str).tolist()
     results = clf(texts, batch_size=32)
@@ -91,7 +68,6 @@ def run_transformer(df: pd.DataFrame) -> pd.DataFrame:
 
     df["tf_neg"], df["tf_neu"], df["tf_pos"] = negs, neus, poss
     df["tf_label"] = labels
-    # signed score analogous to VADER's compound: +1 fully positive, -1 fully negative
     df["tf_compound"] = [p - n for p, n in zip(poss, negs)]
 
     print("Transformer label distribution:")
@@ -99,25 +75,19 @@ def run_transformer(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ---------------------------------------------------------------------------
-# 3. Validation: export a random sample to hand-label
-# ---------------------------------------------------------------------------
 def export_sample():
     df = pd.read_csv(config.SENTIMENT_FILE)
     sample = df.sample(
         n=min(config.VALIDATION_SAMPLE_SIZE, len(df)),
         random_state=config.RANDOM_SEED,
     ).copy()
-    sample["gold_label"] = ""  # <- you fill this column in by hand (positive/neutral/negative)
+    sample["gold_label"] = ""  
     out = config.PROCESSED_DIR / "validation_sample.csv"
     sample[["brand", "text", "text_clean", "vader_label", "gold_label"]].to_csv(out, index=False)
     print(f"Wrote {len(sample)} rows to {out}")
     print("Open it, fill the 'gold_label' column by hand, save, then run: python src/sentiment.py score")
 
 
-# ---------------------------------------------------------------------------
-# 4. Validation: score each method against your hand labels
-# ---------------------------------------------------------------------------
 def score_against_gold():
     from sklearn.metrics import classification_report, accuracy_score
 
@@ -135,8 +105,6 @@ def score_against_gold():
         print(f"Accuracy: {accuracy_score(y_true, y_pred):.3f}")
         print(classification_report(y_true, y_pred, digits=3, zero_division=0))
 
-
-# ---------------------------------------------------------------------------
 def validate_auto():
     """Validate VADER / transformer against a ready-made ground truth:
     Yelp 'stars' (>=4 positive, 3 neutral, <=2 negative) or the Kaggle
@@ -181,7 +149,6 @@ def main():
     if cmd == "validate":
         validate_auto(); return
 
-    # vader / transformer both start from the clean file (or build on prior output)
     src = config.SENTIMENT_FILE if config.SENTIMENT_FILE.exists() else config.CLEAN_FILE
     df = pd.read_csv(src)
 
