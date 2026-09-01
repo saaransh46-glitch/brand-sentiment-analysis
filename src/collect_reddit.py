@@ -1,19 +1,3 @@
-"""
-Optional Stage — Collect Reddit data with PRAW into data/raw/posts_raw.csv.
-
-Setup (one-time, ~15 minutes):
-  1. Log in to Reddit -> https://www.reddit.com/prefs/apps -> "create another app"
-  2. Choose type "script". Note the client_id (under the app name) and secret.
-  3. Set these as environment variables (do NOT hard-code them in the file):
-        export REDDIT_CLIENT_ID="..."
-        export REDDIT_CLIENT_SECRET="..."
-        export REDDIT_USER_AGENT="msc-brand-study by u/yourusername"
-     On Windows PowerShell use:  $env:REDDIT_CLIENT_ID="..."
-  4. pip install praw, then: python src/collect_reddit.py
-
-This pulls the top submissions per subreddit (within TIME_FILTER) plus their
-top-level comments, tags each row with a brand, and writes one tidy CSV.
-"""
 
 import os
 import sys
@@ -53,7 +37,7 @@ def collect():
     reddit = get_reddit()
     rows = []
 
-    # 1. Brand-specific subreddits -> every post is that brand
+    
     for brand, subs in config.BRAND_SUBREDDITS.items():
         for sub in subs:
             print(f"[{brand}] r/{sub} ...")
@@ -86,7 +70,7 @@ def collect():
                     rows.append({"brand": brand, "text": body,
                                  "created_utc": post.created_utc, "source": f"r/{sub}"})
             time.sleep(1)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:  
             print(f"  skipped r/{sub}: {e}")
 
     df = pd.DataFrame(rows)
