@@ -1,21 +1,4 @@
-"""
-Stage 2 — Topic modelling + aspect mapping.
 
-Reads  data/processed/posts_sentiment.csv   (needs sentiment run first)
-Writes data/processed/posts_topics.csv       (adds lda_topic, aspect [, bertopic_topic])
-Also writes outputs/tables/lda_topic_words.csv and per-topic top words to screen.
-
-Two methods, as in your proposal:
-  lda        -> scikit-learn LatentDirichletAllocation (Blei et al., 2003)
-  bertopic   -> neural topic model (run on your machine; downloads an embedder once)
-
-Each topic is mapped to a business aspect (Food quality / Service / Speed /
-Price / Cleanliness) by matching its top words to the seed lists in config.py.
-
-Usage:
-  python src/topics.py lda        (default)
-  python src/topics.py bertopic
-"""
 
 import sys
 from collections import Counter
@@ -49,10 +32,6 @@ def map_aspect(top_words) -> str:
             best, best_hits = aspect, hits
     return best
 
-
-# ---------------------------------------------------------------------------
-# LDA via scikit-learn
-# ---------------------------------------------------------------------------
 def run_lda(df: pd.DataFrame) -> pd.DataFrame:
     from sklearn.feature_extraction.text import CountVectorizer
     from sklearn.decomposition import LatentDirichletAllocation
@@ -101,9 +80,6 @@ def run_lda(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-# ---------------------------------------------------------------------------
-# BERTopic (run on your machine)
-# ---------------------------------------------------------------------------
 def run_bertopic(df: pd.DataFrame) -> pd.DataFrame:
     from bertopic import BERTopic
     from sentence_transformers import SentenceTransformer
