@@ -7,7 +7,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-import config  # noqa: E402
+import config  
 
 
 def _load(cmd: str):
@@ -41,8 +41,8 @@ def run_lda(df: pd.DataFrame) -> pd.DataFrame:
         stop_words="english",
         lowercase=True,
         token_pattern=r"(?u)\b[a-zA-Z]{3,}\b",  # words of 3+ letters
-        max_df=0.5,     # drop terms in >50% of docs (too generic)
-        min_df=10,      # drop very rare terms
+        max_df=0.5,     
+        min_df=10,     
     )
     dtm = vec.fit_transform(texts)
     vocab = vec.get_feature_names_out()
@@ -55,7 +55,7 @@ def run_lda(df: pd.DataFrame) -> pd.DataFrame:
     )
     doc_topics = lda.fit_transform(dtm)
 
-    # top words + aspect per topic
+    
     rows = []
     topic_aspect = {}
     print(f"\n{config.N_TOPICS} LDA topics (top {config.N_TOP_WORDS} words):\n")
