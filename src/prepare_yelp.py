@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-import config  # noqa: E402
+import config  
 
 YELP_DIR = Path.home() / "Downloads" / "yelp"
 
