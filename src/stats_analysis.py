@@ -9,7 +9,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-import config  # noqa: E402
+import config 
 
 SOURCE_NOTE = "Source: author's analysis of Yelp Open Dataset review text."
 
