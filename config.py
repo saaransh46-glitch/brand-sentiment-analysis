@@ -24,10 +24,9 @@ BRAND_KEYWORDS = {
     "KFC":        ["kfc", "kentucky fried"],
     "BurgerKing": ["burger king", "bk "],
 }
-POSTS_PER_SUBREDDIT = 1500     # cap per subreddit
-TIME_FILTER = "year"           # 'day' | 'week' | 'month' | 'year' | 'all'
-MIN_TOKENS = 3                 # drop posts shorter than this after cleaning
-
+POSTS_PER_SUBREDDIT = 1500     
+TIME_FILTER = "year"           
+MIN_TOKENS = 3                 
 VADER_POS_THRESHOLD = 0.05
 VADER_NEG_THRESHOLD = -0.05
 
