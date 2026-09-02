@@ -32,17 +32,16 @@ pip install -r requirements.txt
 ## Run
 
 ```bash
-python src/prepare_yelp.py        # Yelp -> data/raw/posts_raw.csv (or prepare_kaggle.py)
-python src/clean.py               # -> posts_clean.csv (keeps Yelp 'stars' for validation)
-
-python src/sentiment.py vader     # instant, offline
+python src/prepare_yelp.py        
+python src/clean.py               
+python src/sentiment.py vader     
 python src/sentiment.py transformer   # uses your GPU (CUDA/MPS), model downloads once
 python src/sentiment.py validate  # accuracy/precision/recall/F1 vs Yelp stars
 
 python src/topics.py lda          # scikit-learn LDA + aspect mapping
-python src/topics.py bertopic     # neural topic model (optional 2nd method)
+python src/topics.py bertopic     
 
-python src/stats_analysis.py      # figures + tables for your Findings
+python src/stats_analysis.py      
 ```
 
 Outputs land in `outputs/figures/` (Fig 1 sentiment-by-brand, Fig 2 brand x aspect
