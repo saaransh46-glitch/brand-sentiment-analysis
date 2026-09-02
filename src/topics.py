@@ -11,8 +11,7 @@ import config  # noqa: E402
 
 
 def _load(cmd: str):
-    # 'lda' always starts fresh from the sentiment file (so re-runs pick up
-    # updated sentiment columns); 'bertopic' augments the existing lda output.
+    
     if cmd == "bertopic" and config.TOPICS_FILE.exists():
         src = config.TOPICS_FILE
     else:
@@ -23,7 +22,7 @@ def _load(cmd: str):
 
 
 def map_aspect(top_words) -> str:
-    """Assign the aspect whose seed list overlaps most with a topic's top words."""
+    
     words = set(w.lower() for w in top_words)
     best, best_hits = "Other", 0
     for aspect, seeds in config.ASPECT_SEEDS.items():
